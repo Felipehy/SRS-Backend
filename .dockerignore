@@ -1,0 +1,32 @@
+# Build / artefatos
+target/
+
+# Git / IDE
+.git/
+.gitignore
+.gitattributes
+.github/
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# Docs / infra
+HELP.md
+*.md
+Dockerfile
+.dockerignore
+
+# Maven wrapper (usamos a imagem "maven" no build, não o wrapper)
+mvnw
+mvnw.cmd
+.mvn/
+
+# Config específica de ambiente / segredos — NÃO entram na imagem.
+# Em produção tudo vem de variáveis de ambiente (SPRING_DATASOURCE_*, etc.).
+src/main/resources/application.properties
+src/main/resources/application-dev.properties
+src/test/resources/application-test.properties
+
+DEPLOY-AWS-TODO.txt

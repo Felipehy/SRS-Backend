@@ -1,0 +1,43 @@
+{
+  "family": "srs-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/srs-backend-task-role",
+  "containerDefinitions": [
+    {
+      "name": "srs-backend",
+      "image": "<AWS_ACCOUNT_ID>.dkr.ecr.sa-east-1.amazonaws.com/srs-backend:latest",
+      "essential": true,
+      "portMappings": [
+        { "containerPort": 8080, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "SPRING_PROFILES_ACTIVE", "value": "prod" },
+        { "name": "SPRING_DATASOURCE_URL", "value": "jdbc:postgresql://<RDS_HOST>:5432/<DB_NAME>?currentSchema=db_srs&ApplicationName=srs_app" },
+        { "name": "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI", "value": "https://cognito-idp.sa-east-1.amazonaws.com/<COGNITO_USER_POOL_ID>" },
+        { "name": "COGNITO_USER_POOL_ID", "value": "<COGNITO_USER_POOL_ID>" },
+        { "name": "COGNITO_CLIENT_ID", "value": "<COGNITO_CLIENT_ID>" },
+        { "name": "COGNITO_DOMAIN", "value": "<COGNITO_DOMAIN>" }
+      ],
+      "secrets": [
+        { "name": "SPRING_DATASOURCE_USERNAME", "valueFrom": "arn:aws:secretsmanager:sa-east-1:<AWS_ACCOUNT_ID>:secret:<RDS_SECRET_NAME>:username::" },
+        { "name": "SPRING_DATASOURCE_PASSWORD", "valueFrom": "arn:aws:secretsmanager:sa-east-1:<AWS_ACCOUNT_ID>:secret:<RDS_SECRET_NAME>:password::" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/srs-backend",
+          "awslogs-region": "sa-east-1",
+          "awslogs-stream-prefix": "srs"
+        }
+      }
+    }
+  ]
+}
