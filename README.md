@@ -244,7 +244,7 @@ Deploy automatizado via **GitHub Actions** (`.github/workflows/deploy.yml`) a ca
 | Recurso | Valor |
 |---|---|
 | Região | `sa-east-1` |
-| Cluster ECS | `siurb-prod` |
+| Cluster ECS | `exemplo` |
 | Serviço | `srs-backend-service` |
 | Repositório ECR | `srs-backend` |
 
