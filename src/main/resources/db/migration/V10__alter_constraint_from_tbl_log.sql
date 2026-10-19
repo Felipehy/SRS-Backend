@@ -1,0 +1,1 @@
+ALTER TABLE tbl_logs ALTER COLUMN id_data DROP NOT NULL;

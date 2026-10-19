@@ -1,0 +1,1 @@
+INSERT INTO tbl_room (floor) VALUES ('1 ANDAR'),('2 ANDAR'),('3 ANDAR'),('4 ANDAR'),('5 ANDAR');

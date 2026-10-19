@@ -1,0 +1,1 @@
+alter table tbl_user add column given_name varchar(50), add column family_name varchar(100);

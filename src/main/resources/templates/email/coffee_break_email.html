@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="pt-BR"
+      th:with="preheaderText='Solicitação de coffee break. ' + ${subjectEvent},
+               email=${supportEmail}">
+
+<!--
+    SRS - Solicitação de coffee break. Cor do evento: #7a4a1e.
+
+    O model vem de coffeeBreakApproved, que nao segue o base() dos outros e-mails:
+    nao tem username, urlAccompany nem reservation. Por isso a saudacao e montada
+    aqui (o fragmento greeting exige nome) e nao ha botao de acompanhar.
+    O footer le ${email}; o th:with do <html> aponta essa variavel para supportEmail.
+-->
+
+<head th:replace="~{email/fragments/_email_layout :: head(${preheaderText})}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>SRS &mdash; Solicitação de coffee break</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#eef1f5;">
+
+<span th:replace="~{email/fragments/_email_layout :: preheader(${preheaderText})}">
+    Solicitação de coffee break.
+</span>
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+       style="background-color:#eef1f5;">
+    <tr>
+        <td align="center" style="padding:32px 12px;">
+
+            <table role="presentation" class="srs-card" border="0" cellpadding="0" cellspacing="0" width="640"
+                   style="width:640px; max-width:640px; background-color:#ffffff;
+                          border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
+
+                <tr th:replace="~{email/fragments/_email_layout :: topbar}">
+                    <td>&nbsp;</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: header}">
+                    <td>Logo SIURB</td>
+                </tr>
+
+                <!--/* mesmo estilo do fragmento greeting, sem o nome do destinatario */-->
+                <tr>
+                    <td class="srs-pad" style="padding:28px 30px 0 30px; font-family:Arial, Helvetica, sans-serif;">
+                        <p style="margin:0 0 16px 0; font-size:18px; line-height:26px; color:#333333;">
+                            Prezados,
+                        </p>
+                        <p style="margin:0; font-size:14px; line-height:22px; color:#555555;">
+                            Solicitamos o fornecimento de coffee break para o evento descrito abaixo.
+                            Pedimos atenção aos horários de montagem e de início do serviço. Em caso de
+                            dúvida, entre em contato pelo e-mail indicado no rodapé.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: detailsBox('#7a4a1e', ~{::detailsContent})}">
+                    <td style="padding:20px 30px 0 30px;">
+                        <table th:fragment="detailsContent" role="presentation"
+                               border="0" cellpadding="0" cellspacing="0" width="100%">
+
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Evento', ${subjectEvent})}">
+                                <td>Evento</td>
+                                <td>Reunião de alinhamento do contrato</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Número de pessoas', ${numPeople})}">
+                                <td>Número de pessoas</td>
+                                <td>100</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Data do evento', ${#temporals.format(date, 'dd/MM/yyyy')})}">
+                                <td>Data do evento</td>
+                                <td>10/09/2026</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Horário de montagem', ${#temporals.format(foodSetupTime, 'HH:mm')})}">
+                                <td>Horário de montagem</td>
+                                <td>08:30</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Horário do serviço', ${#temporals.format(serviceTime, 'HH:mm')})}">
+                                <td>Horário do serviço</td>
+                                <td>09:00</td>
+                            </tr>
+
+                            <tr th:replace="~{email/fragments/_email_layout :: divider}">
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Local', ${locale})}">
+                                <td>Local</td>
+                                <td>Auditório da Secretaria Municipal de Infraestrutura Urbana e Obras – SIURB</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Endereço', ${address})}">
+                                <td>Endereço</td>
+                                <td>Rua XV de Novembro, 165 – Centro Histórico – São Paulo/SP</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+
+                <!--/* sem botao: o destinatario e o fornecedor, que nao acompanha a reserva no sistema */-->
+                <tr>
+                    <td height="24" style="height:24px; line-height:24px; font-size:0;">&nbsp;</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: footer}">
+                    <td>Divisão Administrativa</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: bottombar}">
+                    <td>&nbsp;</td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+ALTER TABLE tbl_logs ADD COLUMN is_horizontal_navbar boolean DEFAULT TRUE;

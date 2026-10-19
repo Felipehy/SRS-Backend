@@ -1,0 +1,1 @@
+alter table tbl_logs add column id_reservation bigint not null;

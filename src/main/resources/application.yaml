@@ -1,0 +1,15 @@
+app:
+  efs:
+    base-path: /app/anexos
+spring:
+  application:
+    name: srs
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      file-size-threshold: 2MB
+  task:
+    scheduling:
+      pool:
+        size: 2

@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="pt-BR">
+
+<!--
+    SRS - Fragmentos compartilhados dos e-mails transacionais.
+
+    Este arquivo concentra TODO o markup estrutural (barras, cabecalho, rodape,
+    linhas do bloco de detalhes, botao). Os templates de evento
+    (approve/cancel/finish/request) apenas montam a pagina chamando os fragmentos.
+-->
+
+<head th:fragment="head(preheaderText)">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="light only" />
+    <meta name="supported-color-schemes" content="light only" />
+    <title th:text="${preheaderText}">SRS &mdash; Sistema de Reservas</title>
+
+    <!--[if mso]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+
+    <style type="text/css">
+        body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        table { border-collapse: collapse; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        td { mso-line-height-rule: exactly; }
+        img { border: 0; outline: none; text-decoration: none; display: block; -ms-interpolation-mode: bicubic; }
+        a { text-decoration: none; }
+
+        @media only screen and (max-width: 620px) {
+            .srs-card  { width: 100% !important; }
+            .srs-pad   { padding-left: 20px !important; padding-right: 20px !important; }
+            .srs-box   { padding-left: 16px !important; padding-right: 16px !important; }
+            .srs-label { display: block !important; width: 100% !important; padding-right: 0 !important; }
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:0; background-color:#eef1f5;">
+
+<!--
+    preheader(text)
+    Previa exibida na lista de mensagens da caixa de entrada.
+    Fica escondida no corpo do e-mail. Usa span (nao div) para nao
+    introduzir markup estrutural em bloco.
+-->
+<span th:fragment="preheader(text)"
+      style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#eef1f5;">
+    <span th:text="${text}">Notificação do Sistema de Reservas.</span>
+    &#8203;&#847;&#8203;&#847;&#8203;&#847;&#8203;&#847;&#8203;&#847;&#8203;&#847;&#8203;&#847;&#8203;&#847;
+</span>
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+    <!-- topbar: barra institucional de 6px no topo do card -->
+    <tr th:fragment="topbar">
+        <td height="6" bgcolor="#002655"
+            style="height:6px; line-height:6px; font-size:0; background-color:#002655;">&nbsp;</td>
+    </tr>
+
+    <!-- header: faixa clara com o logo (anexo inline montado no Java) -->
+    <tr th:fragment="header">
+        <td class="srs-pad" align="left" bgcolor="#ebeff2"
+            style="padding:16px 30px; background-color:#ebeff2;">
+            <img src="cid:logo" width="110" alt="Sistema de Reservas SIURB"
+                 style="display:block; width:110px; max-width:110px; height:auto; border:0;" />
+        </td>
+    </tr>
+
+    <!-- greeting(username, message): saudacao + paragrafo introdutorio do evento -->
+    <tr th:fragment="greeting(username, message)">
+        <td class="srs-pad" style="padding:28px 30px 0 30px; font-family:Arial, Helvetica, sans-serif;">
+            <p style="margin:0 0 16px 0; font-size:18px; line-height:26px; color:#333333;">
+                Olá, <strong style="color:#2f3f64;" th:text="${username}">Fulano de Tal</strong>!
+            </p>
+            <p style="margin:0; font-size:14px; line-height:22px; color:#555555;"
+               th:text="${message}">Texto introdutório do e-mail.</p>
+        </td>
+    </tr>
+
+    <!--
+        detailsBox(accentColor, content)
+        Moldura do bloco de detalhes. A cor do evento entra na border-left.
+        `content` recebe a <table> de linhas montada pelo template chamador
+        (padrao de layout flexivel do Thymeleaf: ~{::detailsContent}).
+    -->
+    <tr th:fragment="detailsBox(accentColor, content)">
+        <td class="srs-pad" style="padding:20px 30px 0 30px;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+                   style="background-color:#f5f7fb; border-left:6px solid #002655; border-radius:8px;"
+                   th:style="'background-color:#f5f7fb; border-left:6px solid ' + ${accentColor} + '; border-radius:8px;'">
+                <tr>
+                    <td class="srs-box"
+                        style="padding:22px 20px; font-family:Arial, Helvetica, sans-serif;">
+                        <th:block th:replace="${content}">
+                            <p style="margin:0; font-size:14px; line-height:20px; color:#2f3f64;">
+                                Detalhes da reserva.
+                            </p>
+                        </th:block>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!--
+        detailRow(label, value)
+        Par label/valor alinhado a esquerda. A linha INTEIRA (label + valor) some
+        quando o valor e nulo ou vazio, entao campo opcional nao gera linha em branco.
+    -->
+    <tr th:fragment="detailRow(label, value)"
+        th:if="${value != null and !#strings.isEmpty(value)}">
+        <td class="srs-label" align="left" valign="top" width="40%"
+            style="padding:5px 14px 5px 0; font-family:Arial, Helvetica, sans-serif;
+                   font-size:12px; line-height:18px; letter-spacing:0.4px; color:#7b8190;"
+            th:text="${label}">Rótulo</td>
+        <td align="left" valign="top"
+            style="padding:5px 0; font-family:Arial, Helvetica, sans-serif;
+                   font-size:14px; line-height:20px; font-weight:bold; color:#2f3f64;"
+            th:text="${value}">Valor</td>
+    </tr>
+
+    <!--
+        noteRow(label, value, color)
+        Texto livre em destaque dentro do bloco (motivo de cancelamento, observacoes).
+        Some por inteiro quando o valor nao vem preenchido.
+    -->
+    <tr th:fragment="noteRow(label, value, color)"
+        th:if="${value != null and !#strings.isEmpty(value)}">
+        <td colspan="2" align="left" style="padding:14px 0 2px 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+                   style="background-color:#ffffff; border-left:3px solid #a32020; border-radius:4px;"
+                   th:style="'background-color:#ffffff; border-left:3px solid ' + ${color} + '; border-radius:4px;'">
+                <tr>
+                    <td align="left"
+                        style="padding:12px 14px; font-family:Arial, Helvetica, sans-serif;">
+                        <p style="margin:0 0 4px 0; font-size:12px; line-height:18px;
+                                  letter-spacing:0.4px; color:#7b8190;"
+                           th:text="${label}">Rótulo</p>
+                        <p style="margin:0; font-size:14px; line-height:21px; color:#3d4658;"
+                           th:text="${value}">Texto informado pelo usuário.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!--
+        statusRow(label)
+        Linha de status. Recebe ${reservation.status} nas constantes do enum
+        ReserveStatus e traduz para o rotulo legivel em pt-BR. Valor desconhecido
+        cai no proprio conteudo de reservation.status, sem quebrar o e-mail.
+
+        ATENCAO: mesma regra do typeRows, a comparacao e contra String. O model
+        precisa expor reservation.status como String (ReserveStatus.name()).
+    -->
+    <th:block th:fragment="statusRow(label)"
+              th:with="statusText=${reservation.status == 'ENVIADA_PARA_ANALISE' ? 'Enviada para análise'
+                                 : (reservation.status == 'APROVADA'             ? 'Aprovada'
+                                 : (reservation.status == 'REPROVADA'            ? 'Reprovada'
+                                 : (reservation.status == 'CANCELADA'            ? 'Cancelada'
+                                 : (reservation.status == 'FINALIZADA'           ? 'Finalizada'
+                                 : reservation.status))))}">
+        <tr th:replace="~{email/fragments/_email_layout :: detailRow(${label}, ${statusText})}">
+            <td>Status atual</td>
+            <td>Enviada para análise</td>
+        </tr>
+    </th:block>
+
+    <!--
+        typeRows
+        Linhas especificas do tipo de recurso. Um unico bloco para os tres tipos,
+        selecionado por ${reservation.type}, que usa as constantes do enum
+        ReserveType (MEETING_ROOM / AUDITORIUM / FLEET_VEHICLE).
+
+        ATENCAO: a comparacao abaixo e contra String. O model precisa expor
+        reservation.type como String (ReserveType.name()); se vier o enum cru,
+        a comparacao com literal nunca casa e nenhuma linha por tipo aparece.
+
+        Depois dos tres blocos vem o que mais de um tipo usa (cafe, ramal, contato)
+        e os textos livres do solicitante. Nao precisam de th:if por tipo: o campo
+        so vem preenchido no tipo a que pertence.
+
+        Todos os campos sao opcionais. O th:if de detailRow/noteRow some com a linha
+        inteira, rotulo junto, quando o valor nao vem.
+    -->
+    <th:block th:fragment="typeRows">
+
+        <th:block th:if="${reservation.type == 'MEETING_ROOM'}">
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Andar', ${reservation.floor})}">
+                <td>Andar</td>
+                <td>3º andar</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Participantes', ${reservation.attendees})}">
+                <td>Participantes</td>
+                <td>8</td>
+            </tr>
+        </th:block>
+
+        <th:block th:if="${reservation.type == 'AUDITORIUM'}">
+            <!--/*
+                A reserva de auditorio tem tres horarios: a abertura (quem destranca a sala
+                precisa chegar antes), o inicio e o termino do evento. Os dois ultimos ja saem
+                nas linhas de Inicio/Termino montadas por cada template.
+            */-->
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Abertura do auditório', ${#temporals.format(reservation.openingTime, 'HH:mm')})}">
+                <td>Abertura do auditório</td>
+                <td>08:00</td>
+            </tr>
+            <!--/* e por que ela foi pedida nesse horario. Some quando o solicitante nao
+                 justifica: abertura junto com o inicio do evento nao tem o que explicar.
+                 Antes esse texto vinha dentro das Observacoes, no fim do bloco. */-->
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Motivo da abertura', ${reservation.openingReason})}">
+                <td>Motivo da abertura</td>
+                <td>Montagem do palco e passagem de som</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Total de pessoas', ${reservation.expectedAudience})}">
+                <td>Total de pessoas</td>
+                <td>120</td>
+            </tr>
+            <!--/* as duas linhas abaixo so vem preenchidas quando o evento tem publico externo */-->
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Pessoas internas', ${reservation.internalAudience})}">
+                <td>Pessoas internas</td>
+                <td>90</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Pessoas externas', ${reservation.externalAudience})}">
+                <td>Pessoas externas</td>
+                <td>30</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Uso do telão', ${reservation.usesScreen == null ? null : (reservation.usesScreen ? 'Sim' : 'Não')})}">
+                <td>Uso do telão</td>
+                <td>Sim</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Uso do sistema de som', ${reservation.usesSoundSystem == null ? null : (reservation.usesSoundSystem ? 'Sim' : 'Não')})}">
+                <td>Uso do sistema de som</td>
+                <td>Não</td>
+            </tr>
+        </th:block>
+
+        <th:block th:if="${reservation.type == 'FLEET_VEHICLE'}">
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Veículo', ${reservation.vehicleModel})}">
+                <td>Veículo</td>
+                <td>Fiat Argo</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Placa', ${reservation.licensePlate})}">
+                <td>Placa</td>
+                <td>ABC1D23</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Motorista', ${reservation.driverName})}">
+                <td>Motorista</td>
+                <td>João da Silva</td>
+            </tr>
+            <!--/*
+                A ida: hora, de onde o motorista busca o passageiro e para onde vai. O retorno,
+                mais abaixo, tem os seus tres campos -- sao duas viagens, e nao um periodo so.
+            */-->
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Horário de saída', ${#temporals.format(reservation.departureTime, 'HH:mm')})}">
+                <td>Horário de saída</td>
+                <td>08:00</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Local de saída', ${reservation.departure})}">
+                <td>Local de saída</td>
+                <td>Rua XV de Novembro, 165</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Destino', ${reservation.destination})}">
+                <td>Destino</td>
+                <td>Subprefeitura da Sé</td>
+            </tr>
+            <!--/*
+                Qualifica o destino acima, e por isso vem logo depois dele. Diferente de
+                'Retorno previsto', sai com Sim ou Nao: o "Nao" aqui e informacao (a viagem
+                fica na cidade), e nao a ausencia de uma segunda viagem. A justificativa,
+                quando a viagem sai do municipio, vai nos textos livres do fim do bloco.
+            */-->
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Destino fora do município', ${reservation.outsideMunicipality == null ? null : (reservation.outsideMunicipality ? 'Sim' : 'Não')})}">
+                <td>Destino fora do município</td>
+                <td>Sim</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Passageiros', ${reservation.passengers})}">
+                <td>Passageiros</td>
+                <td>3</td>
+            </tr>
+            <!--/* as quatro linhas seguintes somem por inteiro quando nao ha retorno pedido */-->
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Retorno previsto', ${reservation.hasReturn == null ? null : (reservation.hasReturn ? 'Sim' : 'Não')})}">
+                <td>Retorno previsto</td>
+                <td>Sim</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Horário do retorno', ${#temporals.format(reservation.returnTime, 'HH:mm')})}">
+                <td>Horário do retorno</td>
+                <td>17:00</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Saída do retorno', ${reservation.returnDeparture})}">
+                <td>Saída do retorno</td>
+                <td>Subprefeitura da Sé</td>
+            </tr>
+            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Destino do retorno', ${reservation.returnDestination})}">
+                <td>Destino do retorno</td>
+                <td>Rua XV de Novembro, 165</td>
+            </tr>
+        </th:block>
+
+        <!--/*
+            Cafe (sala de reuniao e auditorio). Uma linha para cada coisa: se foi pedido
+            (e, nos e-mails posteriores a analise, como foi decidido), a justificativa
+            escrita pelo solicitante e o motivo da recusa. Os tres ja vieram no mesmo texto
+            e ali um se confundia com o outro.
+        */-->
+        <tr th:replace="~{email/fragments/_email_layout :: detailRow('Café', ${reservation.coffee})}">
+            <td>Café</td>
+            <td>Sim (aprovado)</td>
+        </tr>
+        <tr th:replace="~{email/fragments/_email_layout :: detailRow('Motivo do café', ${reservation.coffeeReason})}">
+            <td>Motivo do café</td>
+            <td>Reunião com a diretoria</td>
+        </tr>
+        <tr th:replace="~{email/fragments/_email_layout :: detailRow('Motivo da recusa do café', ${reservation.coffeeRejectReason})}">
+            <td>Motivo da recusa do café</td>
+            <td>Sem verba no mês</td>
+        </tr>
+
+        <!--/* ramal do solicitante nos tres tipos; o contato e um segundo numero, so da frota */-->
+        <tr th:replace="~{email/fragments/_email_layout :: detailRow('Ramal do solicitante', ${reservation.requesterPhone})}">
+            <td>Ramal do solicitante</td>
+            <td>1611</td>
+        </tr>
+        <tr th:replace="~{email/fragments/_email_layout :: detailRow('Telefone de contato', ${reservation.contactPhone})}">
+            <td>Telefone de contato</td>
+            <td>11 99999-0000</td>
+        </tr>
+
+        <!--/*
+            Textos livres por ultimo, em bloco proprio: sao os unicos campos longos do
+            e-mail e ficariam espremidos na coluna de valor de detailRow.
+        */-->
+        <tr th:replace="~{email/fragments/_email_layout :: noteRow('Justificativa do uso de van', ${reservation.vanReason}, '#2f3f64')}">
+            <td colspan="2">Justificativa do uso de van</td>
+        </tr>
+        <tr th:replace="~{email/fragments/_email_layout :: noteRow('Justificativa do destino fora do município', ${reservation.outsideMunicipalityReason}, '#2f3f64')}">
+            <td colspan="2">Justificativa do destino fora do município</td>
+        </tr>
+        <!--/*
+            Sala de reuniao e auditorio: por que a reserva passa das 19h. So vem preenchida
+            nesse caso -- reserva dentro do expediente nao tem o que justificar, e a linha some.
+        */-->
+        <tr th:replace="~{email/fragments/_email_layout :: noteRow('Justificativa do horário fora do expediente', ${reservation.outsideHoursReason}, '#2f3f64')}">
+            <td colspan="2">Justificativa do horário fora do expediente</td>
+        </tr>
+        <tr th:replace="~{email/fragments/_email_layout :: noteRow('Observações', ${reservation.observation}, '#2f3f64')}">
+            <td colspan="2">Observações</td>
+        </tr>
+
+    </th:block>
+
+    <!-- divider: linha divisoria dentro do bloco de detalhes -->
+    <tr th:fragment="divider">
+        <td colspan="2" style="padding:16px 0 2px 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                    <td height="1" bgcolor="#dce2f0"
+                        style="height:1px; line-height:1px; font-size:0; background-color:#dce2f0;">&nbsp;</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- highlight(label, value, color): destaque grande, usado para o protocolo -->
+    <tr th:fragment="highlight(label, value, color)">
+        <td colspan="2" align="left"
+            style="padding:14px 0 0 0; font-family:Arial, Helvetica, sans-serif;">
+            <p style="margin:0 0 4px 0; font-size:13px; line-height:18px;
+                      letter-spacing:0.5px; color:#7b8190;"
+               th:text="${label}">Protocolo</p>
+            <p style="margin:0; font-size:22px; line-height:28px; font-weight:bold; color:#002655;"
+               th:style="'margin:0; font-size:22px; line-height:28px; font-weight:bold; color:' + ${color} + ';'"
+               th:text="${value}">000000</p>
+        </td>
+    </tr>
+
+    <!-- button(url, text, bgColor): padding no <a> para toda a area ser clicavel -->
+    <tr th:fragment="button(url, text, bgColor)">
+        <td class="srs-pad" align="center" style="padding:14px 30px 14px 30px;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
+                <tr>
+                    <td align="center" bgcolor="#002655" th:bgcolor="${bgColor}"
+                        style="background-color:#002655; border-radius:6px;"
+                        th:style="'background-color:' + ${bgColor} + '; border-radius:6px;'">
+                        <a th:href="${url}" href="#" th:text="${text}"
+                           style="display:inline-block; padding:13px 26px;
+                                  font-family:Arial, Helvetica, sans-serif;
+                                  font-size:16px; line-height:20px; font-weight:bold;
+                                  color:#ffffff; text-decoration:none; border-radius:6px;">
+                            Acompanhar reserva
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- footer: rodape institucional -->
+    <tr th:fragment="footer">
+        <td class="srs-pad" align="center" bgcolor="#ebeff2"
+            style="padding:26px 30px; background-color:#ebeff2;
+                   font-family:Arial, Helvetica, sans-serif; font-size:13px;
+                   line-height:20px; color:#3d4658;">
+            <strong style="color:#2f3f64;">Divisão Administrativa</strong><br />
+            Secretaria de Infraestrutura Urbana e Obras &mdash; SIURB<br />
+            <a th:href="@{mailto:{endereco}(endereco=${email})}"
+               style="color:#002655; text-decoration:none;" th:text="${email}">reservas@example.com</a>
+            &nbsp;|&nbsp; 55 11 3100-1611<br />
+            <span style="font-size:12px; color:#6b7484;">
+                Rua XV de Novembro, 165 &middot; 5° ANDAR &middot; 01013-001 &middot; São Paulo &mdash; SP
+            </span>
+        </td>
+    </tr>
+
+    <!-- bottombar: barra institucional de 6px no rodape do card -->
+    <tr th:fragment="bottombar">
+        <td height="6" bgcolor="#002655"
+            style="height:6px; line-height:6px; font-size:0; background-color:#002655;">&nbsp;</td>
+    </tr>
+
+</table>
+
+</body>
+</html>

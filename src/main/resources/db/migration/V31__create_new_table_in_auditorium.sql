@@ -1,0 +1,1 @@
+alter table tbl_auditorium add column id_ticket bigint;

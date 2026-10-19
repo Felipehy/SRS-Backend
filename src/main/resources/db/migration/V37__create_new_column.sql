@@ -1,0 +1,1 @@
+alter table tbl_fleet_vehicles add column is_outside_the_municipality bool not null default false;

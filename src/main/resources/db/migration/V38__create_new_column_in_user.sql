@@ -1,0 +1,1 @@
+alter table tbl_user add column first_login bool default true not null;

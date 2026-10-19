@@ -1,0 +1,1 @@
+ALTER TABLE tbl_logs ALTER COLUMN reservation_type DROP NOT NULL;

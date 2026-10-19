@@ -1,0 +1,1 @@
+ALTER TABLE tbl_logs RENAME COLUMN id_reservation TO id_data;

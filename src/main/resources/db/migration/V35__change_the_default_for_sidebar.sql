@@ -1,0 +1,1 @@
+alter table tbl_user alter column is_horizontal_navbar set default false;

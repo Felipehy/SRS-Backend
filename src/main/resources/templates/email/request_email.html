@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="pt-BR"
+      th:with="preheaderText='Solicitação recebida. Protocolo ' + ${reservation.protocol} + '.'">
+
+<!-- SRS - Solicitação de reserva recebida. Cor do evento: #c07a12. -->
+
+<head th:replace="~{email/fragments/_email_layout :: head(${preheaderText})}">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>SRS &mdash; Solicitação recebida</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#eef1f5;">
+
+<span th:replace="~{email/fragments/_email_layout :: preheader(${preheaderText})}">
+    Solicitação recebida.
+</span>
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+       style="background-color:#eef1f5;">
+    <tr>
+        <td align="center" style="padding:32px 12px;">
+
+            <table role="presentation" class="srs-card" border="0" cellpadding="0" cellspacing="0" width="640"
+                   style="width:640px; max-width:640px; background-color:#ffffff;
+                          border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
+
+                <tr th:replace="~{email/fragments/_email_layout :: topbar}">
+                    <td>&nbsp;</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: header}">
+                    <td>Logo SIURB</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: greeting(${username}, 'Recebemos sua solicitação de reserva. Atenção: a reserva ainda NÃO está confirmada. Ela está em análise pela equipe responsável e você receberá um novo e-mail assim que houver uma decisão.')}">
+                    <td>Olá! Recebemos sua solicitação de reserva.</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: detailsBox('#c07a12', ~{::detailsContent})}">
+                    <td style="padding:20px 30px 0 30px;">
+                        <table th:fragment="detailsContent" role="presentation"
+                               border="0" cellpadding="0" cellspacing="0" width="100%">
+
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Início solicitado', ${#temporals.format(reservation.startDateTime, 'dd/MM/yyyy HH:mm')})}">
+                                <td>Início solicitado</td>
+                                <td>10/09/2026 09:00</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Término solicitado', ${#temporals.format(reservation.endDateTime, 'dd/MM/yyyy HH:mm')})}">
+                                <td>Término solicitado</td>
+                                <td>10/09/2026 11:00</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Finalidade', ${reservation.purpose})}">
+                                <td>Finalidade</td>
+                                <td>Reunião de alinhamento do contrato</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Solicitante', ${reservation.requesterName})}">
+                                <td>Solicitante</td>
+                                <td>Fulano de Tal</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Setor', ${reservation.requesterSector})}">
+                                <td>Setor</td>
+                                <td>Divisão de Tecnologia da Informação</td>
+                            </tr>
+
+                            <tr th:replace="~{email/fragments/_email_layout :: typeRows}">
+                                <td>Andar</td>
+                                <td>3º andar</td>
+                            </tr>
+
+                            <tr th:replace="~{email/fragments/_email_layout :: divider}">
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+
+                            <tr th:replace="~{email/fragments/_email_layout :: detailRow('Data da solicitação', ${#temporals.format(requestedAt, 'dd/MM/yyyy HH:mm')})}">
+                                <td>Data da solicitação</td>
+                                <td>05/09/2026 14:32</td>
+                            </tr>
+                            <tr th:replace="~{email/fragments/_email_layout :: statusRow('Status atual')}">
+                                <td>Status atual</td>
+                                <td>Enviada para análise</td>
+                            </tr>
+
+                            <tr th:replace="~{email/fragments/_email_layout :: highlight('Protocolo', ${reservation.protocol}, '#c07a12')}">
+                                <td colspan="2">Protocolo 000000</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: button(${urlAccompany}, 'Acompanhar solicitação', '#c07a12')}">
+                    <td>Acompanhar solicitação</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: footer}">
+                    <td>Divisão de Tecnologia da Informação</td>
+                </tr>
+
+                <tr th:replace="~{email/fragments/_email_layout :: bottombar}">
+                    <td>&nbsp;</td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

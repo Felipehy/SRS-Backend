@@ -1,0 +1,52 @@
+HELP.md
+target/
+docs/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### sensitive keys ###
+.env
+.env.*
+!.env.example
+*.properties
+*.yaml
+# application-prod.properties NAO tem segredo (senha vem do Secrets Manager via env)
+# e precisa ir pra imagem que a pipeline builda -> liberado do ignore:
+!application-prod.properties
+!application.yaml
+!application-prod.yaml
+!application.properties
+
+
+### files ###
+DEPLOY-AWS-TODO.txt
+anexos/
